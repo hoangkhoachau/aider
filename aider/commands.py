@@ -150,6 +150,7 @@ class Commands:
             [
                 ("help", "Get help about using aider (usage, config, troubleshoot)."),
                 ("ask", "Ask questions about your code without making any changes."),
+                ("chat", "Simple chat without sending any repository context."),
                 ("code", "Ask for changes to your code (using the best edit format)."),
                 (
                     "architect",
@@ -1166,6 +1167,10 @@ class Commands:
         """Enter context mode to see surrounding code context. If no prompt provided, switches to context mode."""  # noqa
         return self._generic_chat_command(args, "context", placeholder=args.strip() or None)
 
+    def cmd_chat(self, args):
+        """Chat without any repository context. If no prompt provided, switches to chat mode."""
+        return self._generic_chat_command(args, "chat")
+
     def _generic_chat_command(self, args, edit_format, placeholder=None):
         if not args.strip():
             # Switch to the corresponding chat mode if no args provided
@@ -1173,12 +1178,27 @@ class Commands:
 
         from aider.coders.base_coder import Coder
 
-        coder = Coder.create(
-            io=self.io,
-            from_coder=self.coder,
-            edit_format=edit_format,
-            summarize_from_coder=False,
-        )
+        # For "chat" mode, we don't want to send any repository context
+        if edit_format == "chat":
+            # Create a coder with minimal context - no files or repo map
+            coder = Coder.create(
+                io=self.io,
+                from_coder=self.coder,
+                edit_format=edit_format,
+                summarize_from_coder=False,
+                # Clear any files that might be inherited
+                fnames=None,
+                # Disable repo map
+                map_tokens=0,
+            )
+        else:
+            # For other modes, use the existing behavior
+            coder = Coder.create(
+                io=self.io,
+                from_coder=self.coder,
+                edit_format=edit_format,
+                summarize_from_coder=False,
+            )
 
         user_msg = args
         coder.run(user_msg)
