@@ -69,6 +69,7 @@
 - Fix linting errors for filepaths containing shell metacharacters, by Mir Adnan ALI.
 - Add the `openrouter/deepseek-chat-v3-0324:free` model.
 - Add repomap support for the Scala language, by Vasil Markoukin.
+- Add support for GitHub Copilot models, by Son H. Nguyen.
 - Fixed bug in `/run` that was preventing auto-testing.
 - Fix bug preventing `UnboundLocalError` during git tree traversal.
 - Handle `GitCommandNotFound` error if git is not installed or not in PATH.
